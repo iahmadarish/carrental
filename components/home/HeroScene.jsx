@@ -1,7 +1,8 @@
 "use client";
 
 /* ==========================================================
-   Three.js hero — a procedurally built coupe on a reflective
+   Three.js hero — a real supercar model (Ferrari 458 Italia by
+   vicent091036, CC-BY 4.0, via the three.js examples) on a reflective
    outback-night stage (bloom, stars, speed lines).
    Drives in on the "velo:intro" event, follows mouse & scroll.
    ========================================================== */
@@ -12,6 +13,8 @@ import { EffectComposer } from "three/addons/postprocessing/EffectComposer.js";
 import { RenderPass } from "three/addons/postprocessing/RenderPass.js";
 import { UnrealBloomPass } from "three/addons/postprocessing/UnrealBloomPass.js";
 import { OutputPass } from "three/addons/postprocessing/OutputPass.js";
+import { GLTFLoader } from "three/addons/loaders/GLTFLoader.js";
+import { DRACOLoader } from "three/addons/loaders/DRACOLoader.js";
 import gsap from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
 
@@ -95,10 +98,43 @@ export default function HeroScene() {
     ring2.material.opacity = 0.25;
     scene.add(ring2);
 
-    /* car */
-    const car = buildCar();
+    /* car — real model loads async; a procedural fallback is used if it fails */
+    const car = new THREE.Group();
+    car.userData.wheels = [];
     car.position.set(16, 0.02, 0); // drives in nose-first from the right
+    car.add(groundEffects());
     scene.add(car);
+    let carReady = false;
+    let introQueued = false;
+    let disposed = false; // ignore a load that finishes after unmount
+
+    const draco = new DRACOLoader().setDecoderPath("/draco/");
+    new GLTFLoader().setDRACOLoader(draco).load(
+      "/models/ferrari.glb",
+      (gltf) => {
+        if (disposed) return;
+        const model = gltf.scene.children[0];
+        styleCar(model);
+        model.rotation.y = Math.PI / 2; // model nose points −Z → turn it to −X (drive direction)
+        model.scale.setScalar(1.08);
+        car.add(model);
+        ["wheel_fl", "wheel_fr", "wheel_rl", "wheel_rr"].forEach((n) => {
+          const w = model.getObjectByName(n);
+          if (w) car.userData.wheels.push({ obj: w, axis: "x", dir: -1 });
+        });
+        carReady = true;
+        if (introQueued) intro();
+      },
+      undefined,
+      () => {
+        if (disposed) return;
+        const fallback = buildCar();
+        fallback.userData.wheels.forEach((w) => car.userData.wheels.push({ obj: w, axis: "z", dir: 1 }));
+        car.add(fallback);
+        carReady = true;
+        if (introQueued) intro();
+      },
+    );
 
     /* southern-sky stars */
     const starCount = mobile ? 700 : 1600;
@@ -134,7 +170,7 @@ export default function HeroScene() {
     /* post-processing */
     const composer = new EffectComposer(renderer);
     composer.addPass(new RenderPass(scene, camera));
-    composer.addPass(new UnrealBloomPass(new THREE.Vector2(W(), H()), 0.55, 0.6, 0.82));
+    composer.addPass(new UnrealBloomPass(new THREE.Vector2(W(), H()), 0.45, 0.5, 0.9));
     composer.addPass(new OutputPass());
 
     /* interaction */
@@ -146,6 +182,12 @@ export default function HeroScene() {
     window.addEventListener("pointermove", onPointer);
 
     const intro = () => {
+      if (!carReady) {
+        introQueued = true; // wait for the model, then drive in
+        return;
+      }
+      if (intro.done) return;
+      intro.done = true;
       gsap.to(lineMat, { opacity: 0.55, duration: 0.6 });
       gsap.to(car.position, {
         x: 0,
@@ -161,7 +203,7 @@ export default function HeroScene() {
       gsap.fromTo(camera.position, { z: camBase.z + 4, y: camBase.y + 1.5 }, { z: camBase.z, y: camBase.y, duration: 2.8, ease: "power3.out" });
       gsap.fromTo(ring.scale, { x: 0.01, y: 0.01, z: 0.01 }, { x: 1, y: 1, z: 1, duration: 1.6, delay: 1.2, ease: "expo.out" });
     };
-    window.addEventListener("velo:intro", intro, { once: true });
+    window.addEventListener("velo:intro", intro);
     if (window.__veloIntroFired) intro();
 
     const st = ScrollTrigger.create({
@@ -175,7 +217,7 @@ export default function HeroScene() {
     });
 
     /* loop */
-    const clock = new THREE.Clock();
+    const timer = new THREE.Timer();
     let visible = true;
     const io = new IntersectionObserver(([e]) => {
       visible = e.isIntersecting;
@@ -185,12 +227,13 @@ export default function HeroScene() {
     const tick = () => {
       raf = requestAnimationFrame(tick);
       if (!visible) return;
-      const dt = Math.min(clock.getDelta(), 0.05);
-      const t = clock.elapsedTime;
+      timer.update();
+      const dt = Math.min(timer.getDelta(), 0.05);
+      const t = timer.getElapsed();
 
       const spin = state.speed * dt * 14;
       car.userData.wheels.forEach((w) => {
-        w.rotation.z += spin; // nose is -X, so +Z spin rolls forward
+        w.obj.rotation[w.axis] += spin * w.dir;
       });
       if (state.introDone) {
         car.rotation.y += (0.55 + state.mouseX * 0.35 + state.scroll * 2.2 - car.rotation.y) * 0.05;
@@ -221,7 +264,9 @@ export default function HeroScene() {
     window.addEventListener("resize", onResize);
 
     return () => {
+      disposed = true;
       cancelAnimationFrame(raf);
+      timer.dispose?.();
       io.disconnect();
       st.kill();
       window.removeEventListener("pointermove", onPointer);
@@ -239,6 +284,7 @@ export default function HeroScene() {
       envTex.dispose();
       pmrem.dispose();
       composer.dispose?.();
+      draco.dispose();
       renderer.dispose();
       renderer.domElement.remove();
     };
@@ -247,7 +293,79 @@ export default function HeroScene() {
   return <div ref={mountRef} className="absolute inset-0 max-md:top-[18svh] max-md:bottom-auto max-md:h-[62svh]" aria-hidden />;
 }
 
-/* ===== procedural car ===== */
+/* ===== real model: paint, glass, chrome, lights ===== */
+function styleCar(model) {
+  const paint = new THREE.MeshPhysicalMaterial({
+    color: 0xe8642c, // VeloDrive ochre
+    metalness: 0.55,
+    roughness: 0.3,
+    clearcoat: 1,
+    clearcoatRoughness: 0.04,
+  });
+  // slightly grey chrome so the rims don't blow out under the bloom pass
+  const details = new THREE.MeshStandardMaterial({ color: 0x9a9a9e, metalness: 1, roughness: 0.22 });
+  const glass = new THREE.MeshPhysicalMaterial({ color: 0xffffff, metalness: 0.25, roughness: 0, transmission: 1 });
+
+  model.getObjectByName("body").material = paint;
+  ["rim_fl", "rim_fr", "rim_rr", "rim_rl", "trim"].forEach((n) => {
+    const o = model.getObjectByName(n);
+    if (o) o.material = details;
+  });
+  const g = model.getObjectByName("glass");
+  if (g) g.material = glass;
+
+  model.traverse((o) => {
+    if (!o.isMesh) return;
+    o.castShadow = true;
+    const name = o.material?.name || "";
+    if (name === "Taillight_Glass" || o.name === "lights_red") {
+      o.material = o.material.clone();
+      o.material.emissive = new THREE.Color(0xff2a1a);
+      o.material.emissiveIntensity = 2.5;
+    } else if (name === "Turn_Signal_LED" || o.name === "leds") {
+      o.material = o.material.clone();
+      o.material.emissive = new THREE.Color(0xfff3e0);
+      o.material.emissiveIntensity = 3;
+    }
+  });
+}
+
+/* soft contact shadow + ochre under-glow, as radial textures (no hard edges) */
+function groundEffects() {
+  const radial = (stops) => {
+    const cv = document.createElement("canvas");
+    cv.width = cv.height = 128;
+    const ctx = cv.getContext("2d");
+    const grad = ctx.createRadialGradient(64, 64, 0, 64, 64, 64);
+    stops.forEach(([o, c]) => grad.addColorStop(o, c));
+    ctx.fillStyle = grad;
+    ctx.fillRect(0, 0, 128, 128);
+    return new THREE.CanvasTexture(cv);
+  };
+  const fx = new THREE.Group();
+  const shadow = new THREE.Mesh(
+    new THREE.PlaneGeometry(5.6, 2.8),
+    new THREE.MeshBasicMaterial({ map: radial([[0, "rgba(0,0,0,0.85)"], [0.55, "rgba(0,0,0,0.5)"], [1, "rgba(0,0,0,0)"]]), transparent: true, depthWrite: false }),
+  );
+  shadow.rotation.x = -Math.PI / 2;
+  shadow.position.y = 0.012;
+  const glow = new THREE.Mesh(
+    new THREE.PlaneGeometry(7, 3.8),
+    new THREE.MeshBasicMaterial({
+      map: radial([[0, "rgba(232,100,44,1)"], [0.5, "rgba(232,100,44,0.3)"], [1, "rgba(232,100,44,0)"]]),
+      transparent: true,
+      opacity: 0.35,
+      blending: THREE.AdditiveBlending,
+      depthWrite: false,
+    }),
+  );
+  glow.rotation.x = -Math.PI / 2;
+  glow.position.y = 0.01;
+  fx.add(glow, shadow);
+  return fx;
+}
+
+/* ===== procedural fallback car (used only if the model can't load) ===== */
 function buildCar() {
   const car = new THREE.Group();
   const paint = new THREE.MeshPhysicalMaterial({ color: 0xe8642c, metalness: 0.55, roughness: 0.22, clearcoat: 1, clearcoatRoughness: 0.06 });

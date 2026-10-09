@@ -6,7 +6,7 @@ import { motion, AnimatePresence } from "framer-motion";
 import { Menu, X, CarFront } from "lucide-react";
 import { useEffect, useState } from "react";
 import LanguageSwitcher from "@/components/shared/LanguageSwitcher";
-import { useAuth } from "@/components/providers/AppProviders";
+import { useAuth, useLenis } from "@/components/providers/AppProviders";
 
 const navKeys = [
   { key: "home", href: "" },
@@ -32,6 +32,7 @@ export function Logo({ base }) {
 export default function Header({ locale, dict }) {
   const pathname = usePathname();
   const { user, logout } = useAuth();
+  const lenis = useLenis();
   const [openAt, setOpenAt] = useState(null);
   const mobileOpen = openAt === pathname; // closes itself on navigation
   const [scrolled, setScrolled] = useState(false);
@@ -50,6 +51,21 @@ export default function Header({ locale, dict }) {
     return () => window.removeEventListener("scroll", onScroll);
   }, []);
 
+  // while the menu is open: stop page scrolling and close on Escape
+  useEffect(() => {
+    if (!mobileOpen) return;
+    const l = lenis.current;
+    l?.stop();
+    document.documentElement.style.overflow = "hidden";
+    const esc = (e) => e.key === "Escape" && setOpenAt(null);
+    window.addEventListener("keydown", esc);
+    return () => {
+      l?.start();
+      document.documentElement.style.overflow = "";
+      window.removeEventListener("keydown", esc);
+    };
+  }, [mobileOpen, lenis]);
+
   function isActive(href) {
     if (href === "") return pathname === base || pathname === `${base}/`;
     return pathname.startsWith(`${base}${href}`);
@@ -63,6 +79,7 @@ export default function Header({ locale, dict }) {
     .toUpperCase();
 
   return (
+    <>
     <header
       className={`fixed inset-x-0 top-0 z-50 transition-all duration-500 ${
         scrolled ? "border-b border-line bg-ink/75 py-3 backdrop-blur-xl" : "py-5"
@@ -121,7 +138,9 @@ export default function Header({ locale, dict }) {
           )}
           <button
             type="button"
-            className="inline-flex rounded-full border border-line-2 p-2.5 lg:hidden"
+            className="relative z-50 inline-flex rounded-full border border-line-2 bg-ink/60 p-2.5 lg:hidden"
+            aria-expanded={mobileOpen}
+            aria-controls="mobile-menu"
             onClick={() => setOpenAt(mobileOpen ? null : pathname)}
             aria-label={mobileOpen ? "Close menu" : "Open menu"}
           >
@@ -130,6 +149,7 @@ export default function Header({ locale, dict }) {
         </div>
       </div>
 
+    </header>
       <AnimatePresence>
         {mobileOpen && (
           <motion.nav
@@ -137,7 +157,9 @@ export default function Header({ locale, dict }) {
             animate={{ clipPath: "circle(150% at 100% 0%)" }}
             exit={{ clipPath: "circle(0% at 100% 0%)" }}
             transition={{ duration: 0.7, ease: [0.22, 1, 0.36, 1] }}
-            className="fixed inset-0 -z-10 flex flex-col bg-ink-2 px-6 pt-28 pb-10 lg:hidden"
+            id="mobile-menu"
+            data-lenis-prevent
+            className="fixed inset-0 z-40 flex flex-col overflow-y-auto bg-ink-2 px-6 pt-28 pb-10 lg:hidden"
           >
             {navKeys.map(({ key, href }, i) => (
               <motion.div key={key} initial={{ opacity: 0, y: 24 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.15 + i * 0.05 }}>
@@ -165,6 +187,6 @@ export default function Header({ locale, dict }) {
           </motion.nav>
         )}
       </AnimatePresence>
-    </header>
+    </>
   );
 }

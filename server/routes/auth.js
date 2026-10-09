@@ -52,7 +52,16 @@ router.post('/register', authLimiter, asyncHandler(async (req, res) => {
     user = new User({ name, email, phone, password, state: state || '', marketingOptIn: !!marketingOptIn });
   }
   await user.save();
-  await issueOtp(user);
+  try {
+    await issueOtp(user);
+  } catch (err) {
+    console.error('📧 Could not send verification email:', err.message);
+    return res.status(502).json({
+      message: 'Account created, but we couldn’t send the verification email. Please try “Resend code” shortly.',
+      email: user.email,
+      code: 'EMAIL_FAILED',
+    });
+  }
 
   res.status(201).json({ message: 'Account created. We’ve emailed you a 6-digit code.', email: user.email });
 }));

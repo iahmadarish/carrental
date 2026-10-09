@@ -48,6 +48,10 @@ browser ──► Next.js (app/)  ──/api/* rewrite──►  Express API (se
 
 **Security:** bcrypt (12 rounds), JWT in an httpOnly SameSite cookie, OTP and reset tokens stored hashed with expiry, OTP attempt limit, rate limits on auth and forms, Helmet, honeypot spam field, no email enumeration, admin role guard.
 
+## Credits
+- Hero 3D car: "Ferrari 458 Italia" by [vicent091036](https://sketchfab.com/models/57bf6cc56931426e87494f554df1dab6), licensed [CC BY 4.0](https://creativecommons.org/licenses/by/4.0/), taken from the three.js examples (`public/models/ferrari.glb`).
+- Draco decoder (`public/draco/`) from three.js (MIT).
+
 ## i18n
 Locales: `au` (default), `en`, `nz`, `fr`, `es`, `de`. Every locale is layered on top of English (`lib/i18n/get-dictionary.js`). New sections live in `dictionaries/extra-en.js` and show in English until translated.
 

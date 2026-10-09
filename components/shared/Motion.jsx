@@ -16,14 +16,22 @@ export function Reveal({ as: Tag = "div", children, className = "", stagger = 0.
     const ctx = gsap.context(() => {
       const items = ref.current.querySelectorAll("[data-reveal]");
       const targets = items.length ? items : [ref.current];
-      gsap.from(targets, {
-        y,
-        opacity: 0,
-        duration: 1.1,
-        ease: "power3.out",
-        stagger,
-        scrollTrigger: { trigger: ref.current, start: "top 85%" },
-      });
+      // fromTo with explicit end values: a plain from() reads the *current* computed style as its
+      // end state, which can be mid-way through a CSS transition (React dev runs effects twice)
+      // and leaves the element stuck invisible. CSS transitions are paused while GSAP animates.
+      gsap.fromTo(
+        targets,
+        { y, opacity: 0, transition: "none" },
+        {
+          y: 0,
+          opacity: 1,
+          duration: 1.1,
+          ease: "power3.out",
+          stagger,
+          clearProps: "transform,opacity,transition",
+          scrollTrigger: { trigger: ref.current, start: "top 85%" },
+        },
+      );
     }, ref);
     return () => ctx.revert();
   }, [stagger, y]);
