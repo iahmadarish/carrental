@@ -7,7 +7,7 @@ import gsap from "gsap";
 import { Fuel, Gauge, Heart, MapPin, Star, Users } from "lucide-react";
 import { useAuth, useToast } from "@/components/providers/AppProviders";
 import { api } from "@/lib/api";
-import { aud, FALLBACK_IMG } from "@/lib/format";
+import { aud, FALLBACK_IMG, IMAGE_BLUR } from "@/lib/format";
 
 export function typeLabel(dict, type) {
   return dict.fleet.categories?.[String(type).toLowerCase()] ?? type;
@@ -23,6 +23,8 @@ export function SmartImage({ src, alt, className = "", sizes, priority }) {
       sizes={sizes}
       priority={priority}
       unoptimized={failed || !src}
+      placeholder={src && !failed ? "blur" : "empty"}
+      blurDataURL={IMAGE_BLUR}
       onError={() => setFailed(true)}
       className={className}
     />
@@ -73,30 +75,17 @@ export default function VehicleCard({ car, locale, dict, listing, query = "" }) 
   const mode = listing || (car.listing === "sale" ? "sale" : "rent");
   const href = `/${locale}/fleet/${car.slug}${query}`;
 
-  function onMove(e) {
-    if (!window.matchMedia("(hover: hover)").matches) return;
-    const r = cardRef.current.getBoundingClientRect();
-    const x = (e.clientX - r.left) / r.width - 0.5;
-    const y = (e.clientY - r.top) / r.height - 0.5;
-    gsap.to(cardRef.current, { rotateY: x * 7, rotateX: -y * 7, transformPerspective: 900, duration: 0.5 });
-  }
-  function onLeave() {
-    gsap.to(cardRef.current, { rotateY: 0, rotateX: 0, duration: 0.9, ease: "elastic.out(1,.5)" });
-  }
-
   return (
     <article
       ref={cardRef}
-      onMouseMove={onMove}
-      onMouseLeave={onLeave}
-      className="vcard group card relative flex flex-col overflow-hidden transition-colors duration-500 hover:border-ochre/50"
+      className="vcard group card relative flex flex-col overflow-hidden transition-[border-color,box-shadow] duration-300 hover:border-gum/35 hover:shadow-[0_20px_50px_-24px_rgba(0,0,0,.65)]"
     >
       <Link href={href} className="relative block aspect-[16/10] overflow-hidden bg-gradient-to-br from-ink-3 to-[#2c2017]">
         <SmartImage
           src={car.images?.[0]}
           alt={car.title}
           sizes="(max-width: 768px) 100vw, 33vw"
-          className="scale-[1.04] object-cover transition-transform duration-[1200ms] ease-out-expo group-hover:scale-[1.12]"
+          className="object-cover transition-transform duration-700 ease-out-expo group-hover:scale-[1.03]"
         />
       </Link>
       <div className="absolute top-3.5 left-3.5 flex flex-wrap gap-1.5">
@@ -109,10 +98,10 @@ export default function VehicleCard({ car, locale, dict, listing, query = "" }) 
       <div className="flex flex-1 flex-col gap-4 p-5 sm:p-6">
         <div className="flex justify-between gap-3">
           <div>
-            <p className="text-xs font-bold tracking-wider text-mute uppercase">
+            <p className="text-xs font-medium text-mute">
               {car.make} · {typeLabel(dict, car.type)}
             </p>
-            <Link href={href} className="mt-1 block font-display text-xl leading-tight font-bold">
+            <Link href={href} className="mt-1 block font-display text-xl leading-tight font-semibold">
               {car.title}
             </Link>
             <p className="mt-1.5 flex items-center gap-1.5 text-[13px] text-mute">
@@ -136,16 +125,20 @@ export default function VehicleCard({ car, locale, dict, listing, query = "" }) 
           ))}
         </div>
 
+        {mode !== "sale" && (
+          <p className="text-xs text-gum/90">{dict.common.rentalIncludes}</p>
+        )}
+
         <div className="mt-auto flex items-end justify-between gap-3 border-t border-dashed border-line-2 pt-4">
           {mode === "sale" && car.salePrice ? (
-            <p className="font-display text-2xl leading-none font-bold">
+            <p className="font-display text-2xl leading-none font-semibold">
               {aud(car.salePrice)}
-              <span className="mt-1.5 block font-sans text-xs font-medium text-mute">{dict.common.driveAway}</span>
+              <span className="mt-1.5 block font-sans text-xs font-medium text-mute">{dict.common.driveAway} · {dict.common.gstNote}</span>
             </p>
           ) : (
-            <p className="font-display text-2xl leading-none font-bold">
+            <p className="font-display text-2xl leading-none font-semibold">
               {aud(car.pricePerDay)}
-              <span className="mt-1.5 block font-sans text-xs font-medium text-mute">{dict.common.perDay} · GST incl.</span>
+              <span className="mt-1.5 block font-sans text-xs font-medium text-mute">{dict.common.perDay} · {dict.common.unlimitedKm}</span>
             </p>
           )}
           {car.listing === "both" && (

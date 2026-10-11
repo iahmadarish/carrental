@@ -24,26 +24,26 @@ export default async function ContactPage({ params }) {
 
   return (
     <>
-      <PageHero eyebrow={dict.nav.contact} lines={[words.slice(0, -2).join(" ") || words[0], words.slice(-2).join(" ")]} subtitle={dict.contactPage.subtitle} />
+      <PageHero lines={[words.slice(0, -2).join(" ") || words[0], words.slice(-2).join(" ")]} subtitle={dict.contactPage.subtitle} />
       <section className="container-x grid items-start gap-12 pb-20 lg:grid-cols-[1.3fr_1fr]">
         <ContactForm dict={dict} />
         <div className="flex flex-col gap-4 lg:pt-16">
           <div className="panel">
-            <span className="eyebrow">Call us</span>
-            <p className="mt-3 flex items-center gap-3 font-display text-3xl font-bold">
+            <p className="panel-title">Call us</p>
+            <p className="mt-3 flex items-center gap-3 font-display text-2xl font-semibold">
               <Phone className="h-6 w-6 text-ochre" /> 1300 835 637
             </p>
             <p className="mt-2 text-sm text-mute">Mon–Sat, 7am–8pm AEST · 24/7 roadside on 1800 000 111</p>
           </div>
           <div className="panel">
-            <span className="eyebrow">Email</span>
-            <p className="mt-3 flex items-center gap-3 text-xl font-bold">
+            <p className="panel-title">Email</p>
+            <p className="mt-3 flex items-center gap-3 text-lg font-semibold">
               <Mail className="h-5 w-5 text-ochre" /> hello@velodrive.com.au
             </p>
             <p className="mt-2 text-sm text-mute">We reply within one business day.</p>
           </div>
           <div className="panel">
-            <span className="eyebrow">{dict.contactPage.offices}</span>
+            <p className="panel-title">{dict.contactPage.offices}</p>
             <ul className="mt-4 space-y-4">
               {offices.map((o) => (
                 <li key={o.city} className="flex gap-3 text-sm text-mute">

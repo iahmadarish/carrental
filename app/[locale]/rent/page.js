@@ -23,7 +23,7 @@ export default async function RentPage({ params }) {
 
   return (
     <>
-      <PageHero eyebrow={dict.nav.rent} lines={[words.slice(0, -1).join(" "), `${words.at(-1)}.`]} subtitle={dict.rentPage.subtitle}>
+      <PageHero lines={[words.slice(0, -1).join(" "), `${words.at(-1)}.`]} subtitle={dict.rentPage.subtitle}>
         <Suspense fallback={<div className="skeleton h-28" />}>
           <RentalSearch dict={dict} />
         </Suspense>

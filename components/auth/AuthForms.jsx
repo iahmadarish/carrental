@@ -12,10 +12,10 @@ import { AU_STATES } from "@/lib/format";
 import { useQueryParam } from "@/lib/hooks";
 
 const IMG = {
-  login: "https://images.unsplash.com/photo-1503376780353-7e6692767b70?auto=format&fit=crop&w=1400&q=80",
-  register: "https://images.unsplash.com/photo-1494976388531-d1058494cdd8?auto=format&fit=crop&w=1400&q=80",
-  forgot: "https://images.unsplash.com/photo-1519641471654-76ce0107ad1b?auto=format&fit=crop&w=1400&q=80",
-  reset: "https://images.unsplash.com/photo-1533473359331-0135ef1b58bf?auto=format&fit=crop&w=1400&q=80",
+  login: "https://images.unsplash.com/photo-1449965408869-eaa3f722e40d?auto=format&fit=crop&w=1400&q=80",
+  register: "https://images.unsplash.com/photo-148529157115f-772bcfc10da5?auto=format&fit=crop&w=1400&q=80",
+  forgot: "https://images.unsplash.com/photo-1502877338535-766e1452684a?auto=format&fit=crop&w=1400&q=80",
+  reset: "https://images.unsplash.com/photo-1492144534655-ae79c964c9d7?auto=format&fit=crop&w=1400&q=80",
 };
 
 const qs = (k) => (typeof window === "undefined" ? null : new URLSearchParams(window.location.search).get(k));
@@ -24,7 +24,7 @@ const safeNext = (locale) => {
   return n && n.startsWith("/") && !n.startsWith("//") ? n : `/${locale}/account`;
 };
 
-function Shell({ kind, eyebrow, quote, children }) {
+function Shell({ kind, quote, children }) {
   const ref = useRef(null);
   const [imgOk, setImgOk] = useState(true);
   useEffect(() => {
@@ -42,8 +42,7 @@ function Shell({ kind, eyebrow, quote, children }) {
         <div className="absolute inset-0 bg-[radial-gradient(circle_at_30%_20%,rgba(232,100,44,.25),transparent_55%)]" />
         {quote && (
           <div className="absolute right-12 bottom-14 left-12">
-            <span className="eyebrow">{eyebrow}</span>
-            <p className="h-md mt-4">{quote}</p>
+            <p className="h-md text-balance">{quote}</p>
           </div>
         )}
       </div>
@@ -100,9 +99,8 @@ export function LoginForm({ locale, dict }) {
   }
 
   return (
-    <Shell kind="login" eyebrow="Welcome back" quote={a.sideLogin}>
-      <span className="eyebrow">{a.login}</span>
-      <h1 className="mt-4 text-5xl font-bold">{a.loginTitle}</h1>
+    <Shell kind="login" quote={a.sideLogin}>
+      <h1 className="h-md">{a.loginTitle}</h1>
       <p className="mt-2 mb-8 text-mute">{a.loginSub}</p>
       <form ref={form} onSubmit={submit} className="space-y-4">
         <label className="block">
@@ -226,12 +224,11 @@ export function RegisterForm({ locale, dict }) {
   }
 
   return (
-    <Shell kind="register" eyebrow="VeloDrive Club" quote={a.sideRegister}>
+    <Shell kind="register" quote={a.sideRegister}>
       {step === "details" ? (
         // distinct keys: otherwise React reuses this <div> for the OTP step and keeps GSAP's opacity:0
         <div key="details" ref={box}>
-          <span className="eyebrow">{a.createAccount}</span>
-          <h1 className="mt-4 text-5xl font-bold">{a.registerTitle}</h1>
+          <h1 className="h-md">{a.registerTitle}</h1>
           <p className="mt-2 mb-8 text-mute">{a.registerSub}</p>
           <form onSubmit={register} className="space-y-4" noValidate>
             <label className="block">
@@ -282,8 +279,7 @@ export function RegisterForm({ locale, dict }) {
         </div>
       ) : (
         <div key="otp" className="otp-step">
-          <span className="eyebrow">Verify email</span>
-          <h1 className="mt-4 text-5xl font-bold">{a.verifyTitle}</h1>
+          <h1 className="h-md">{a.verifyTitle}</h1>
           <p className="mt-2 text-mute">
             {a.verifySub} <b className="text-foreground">{email}</b>.
           </p>
@@ -345,8 +341,7 @@ export function ForgotForm({ locale, dict }) {
   }
   return (
     <Shell kind="forgot">
-      <span className="eyebrow">Reset password</span>
-      <h1 className="mt-4 text-5xl font-bold">{a.forgotTitle}</h1>
+      <h1 className="h-md">{a.forgotTitle}</h1>
       <p className="mt-2 mb-8 text-mute">{a.forgotSub}</p>
       <form onSubmit={submit} className="space-y-4">
         <label className="block">
@@ -390,8 +385,7 @@ export function ResetForm({ locale, dict }) {
   }
   return (
     <Shell kind="reset">
-      <span className="eyebrow">New password</span>
-      <h1 className="mt-4 text-5xl font-bold">{a.resetTitle}</h1>
+      <h1 className="h-md">{a.resetTitle}</h1>
       <p className="mt-2 mb-8 text-mute">{a.resetSub}</p>
       <form onSubmit={submit} className="space-y-4">
         <label className="block">

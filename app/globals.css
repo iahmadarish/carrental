@@ -22,8 +22,8 @@
   --color-mute: #a39d94;
   --color-line: rgba(255, 255, 255, 0.09);
   --color-line-2: rgba(255, 255, 255, 0.16);
-  --font-sans: var(--font-dm-sans), ui-sans-serif, system-ui, sans-serif;
-  --font-display: var(--font-syne), ui-sans-serif, system-ui, sans-serif;
+  --font-sans: var(--font-inter), ui-sans-serif, system-ui, sans-serif;
+  --font-display: var(--font-plus-jakarta), var(--font-inter), ui-sans-serif, system-ui, sans-serif;
   --ease-out-expo: cubic-bezier(0.22, 1, 0.36, 1);
 }
 
@@ -39,7 +39,8 @@ body {
 
 h1, h2, h3, h4 {
   font-family: var(--font-display);
-  letter-spacing: -0.02em;
+  letter-spacing: -0.025em;
+  font-weight: 600;
 }
 
 ::selection { background: #e8642c; color: #fff; }
@@ -48,20 +49,16 @@ h1, h2, h3, h4 {
   .container-x { @apply mx-auto w-full max-w-7xl px-5 sm:px-6 lg:px-8; }
   .section { @apply py-24 sm:py-32; }
 
-  .eyebrow {
-    @apply inline-flex items-center gap-2.5 text-xs font-bold uppercase tracking-[0.22em] text-ochre-2;
-  }
-  .eyebrow::before { content: ""; @apply h-px w-7 bg-current; }
-
-  .h-xl { @apply font-display text-5xl leading-[0.98] font-bold sm:text-7xl lg:text-[8.5rem]; }
-  .h-lg { @apply font-display text-4xl leading-[1.02] font-bold sm:text-6xl lg:text-7xl; }
-  .h-md { @apply font-display text-3xl leading-tight font-bold sm:text-4xl; }
-  .lead { @apply max-w-xl text-base leading-relaxed text-mute sm:text-lg; }
-  .outline-text { -webkit-text-stroke: 1.5px var(--color-sand); color: transparent; }
+  .h-xl { @apply font-display text-[2.75rem] leading-[1.05] font-semibold sm:text-6xl lg:text-[5.25rem]; }
+  .h-lg { @apply font-display text-3xl leading-[1.08] font-semibold sm:text-5xl lg:text-6xl; }
+  .h-md { @apply font-display text-2xl leading-snug font-semibold sm:text-3xl; }
+  .lead { @apply max-w-xl text-[15px] leading-[1.65] text-mute sm:text-[17px]; }
+  .section-title { @apply text-sm font-medium text-mute; }
+  .panel-title { @apply text-sm font-medium text-sand; }
 
   /* buttons with a sand "fill-up" hover */
   .btn {
-    @apply relative isolate inline-flex items-center justify-center gap-2 overflow-hidden rounded-full border border-ochre bg-ochre px-6 py-3.5 text-sm font-bold text-white transition-[color,transform] duration-300 disabled:pointer-events-none disabled:opacity-50;
+    @apply relative isolate inline-flex items-center justify-center gap-2 overflow-hidden rounded-xl border border-ochre bg-ochre px-6 py-3.5 text-sm font-semibold text-white transition-[color,transform] duration-300 disabled:pointer-events-none disabled:opacity-50;
   }
   .btn::before {
     content: "";
@@ -75,7 +72,7 @@ h1, h2, h3, h4 {
   .panel { @apply rounded-3xl border border-line bg-ink-2 p-6 sm:p-8; }
   .card { @apply rounded-[28px] border border-line bg-ink-2; }
 
-  .field-label { @apply mb-2 block text-[13px] font-bold text-sand; }
+  .field-label { @apply mb-2 block text-[13px] font-medium text-sand/90; }
   .input {
     @apply w-full rounded-2xl border border-line-2 bg-white/[0.04] px-4 py-3.5 text-foreground outline-none transition placeholder:text-mute/60 focus:border-ochre focus:bg-ochre/5;
   }
@@ -87,12 +84,12 @@ h1, h2, h3, h4 {
   .chip-on { @apply border-sand bg-sand font-bold text-ink; }
 
   .badge {
-    @apply rounded-full border border-line-2 bg-ink/70 px-2.5 py-1 text-[11px] font-extrabold tracking-wider uppercase backdrop-blur;
+    @apply rounded-md border border-line-2 bg-ink/70 px-2.5 py-1 text-[11px] font-semibold tracking-normal backdrop-blur;
   }
   .badge-ochre { @apply border-ochre bg-ochre text-white; }
   .badge-gum { @apply border-gum/40 bg-gum/20 text-gum; }
 
-  .status { @apply rounded-full px-2.5 py-1 text-[11px] font-extrabold uppercase tracking-wider; }
+  .status { @apply rounded-md px-2.5 py-1 text-[11px] font-semibold capitalize; }
   .status-pending, .status-new { @apply bg-amber-400/15 text-amber-300; }
   .status-confirmed, .status-active, .status-contacted { @apply bg-emerald-400/15 text-emerald-300; }
   .status-cancelled { @apply bg-red-400/15 text-red-300; }
@@ -118,7 +115,7 @@ h1, h2, h3, h4 {
 @keyframes grain { 0%,100%{transform:translate(0,0)} 20%{transform:translate(-5%,4%)} 40%{transform:translate(4%,-6%)} 60%{transform:translate(-3%,2%)} 80%{transform:translate(6%,5%)} }
 
 .grain {
-  position: fixed; inset: -50%; z-index: 60; pointer-events: none; opacity: 0.05;
+  position: fixed; inset: -50%; z-index: 60; pointer-events: none; opacity: 0.028;
   background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='160' height='160'%3E%3Cfilter id='n'%3E%3CfeTurbulence baseFrequency='.9' numOctaves='3'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
   animation: grain 8s steps(10) infinite;
 }

@@ -4,7 +4,7 @@ import { useEffect, useRef } from "react";
 import gsap from "gsap";
 
 /** Big page title whose lines rise out of a mask on load. */
-export default function PageHero({ eyebrow, lines, accentLine = 1, subtitle, children }) {
+export default function PageHero({ lines, accentLine = 1, subtitle, children }) {
   const ref = useRef(null);
   useEffect(() => {
     if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) return;
@@ -21,8 +21,7 @@ export default function PageHero({ eyebrow, lines, accentLine = 1, subtitle, chi
         className="pointer-events-none absolute -top-40 -right-40 h-[38rem] w-[38rem] rounded-full bg-[radial-gradient(circle,rgba(232,100,44,.18),transparent_60%)] blur-2xl"
       />
       <div className="container-x relative">
-        {eyebrow && <span className="eyebrow ph-in">{eyebrow}</span>}
-        <h1 className="h-lg mt-5">
+        <h1 className="h-lg">
           {lines.map((l, i) => (
             <span key={i} className="ph-line block overflow-hidden pb-[0.06em]">
               <span className={`inline-block ${i === accentLine ? "text-ochre" : ""}`}>{l}</span>

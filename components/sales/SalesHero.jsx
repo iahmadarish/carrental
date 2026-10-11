@@ -14,7 +14,6 @@ export default function SalesHero({ dict }) {
 
   return (
     <PageHero
-      eyebrow={dict.nav.sales}
       lines={[words.slice(0, cut).join(" "), words.slice(cut).join(" ")]}
       subtitle={dict.salesPage.subtitle}
     >

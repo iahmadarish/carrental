@@ -19,7 +19,7 @@ function Table({ head, children }) {
         <thead>
           <tr>
             {head.map((h) => (
-              <th key={h} className="border-b border-line bg-ink-2 px-4 py-3.5 text-left text-[11px] font-bold tracking-[0.1em] text-mute uppercase">
+              <th key={h} className="border-b border-line bg-ink-2 px-4 py-3.5 text-left text-xs font-medium text-mute">
                 {h}
               </th>
             ))}
@@ -112,8 +112,7 @@ export default function AdminDashboard({ locale }) {
     <div className="container-x pt-36 pb-16">
       <div className="mb-9 flex flex-wrap items-end justify-between gap-5">
         <div>
-          <span className="eyebrow">Control room</span>
-          <h1 className="h-lg mt-4">Admin dashboard</h1>
+          <h1 className="h-lg">Admin dashboard</h1>
         </div>
         <button type="button" className="btn" onClick={() => setEditing({})}>
           <Plus className="h-4 w-4" /> Add car
@@ -153,7 +152,7 @@ export default function AdminDashboard({ locale }) {
                   ["Subscribers", data.subscribers],
                 ].map(([k, v, money]) => (
                   <div key={k} className="rounded-2xl border border-line bg-ink-2 p-5">
-                    <span className="text-xs tracking-[0.1em] text-mute uppercase">{k}</span>
+                    <span className="text-xs font-medium text-mute">{k}</span>
                     <b className="mt-1.5 block font-display text-3xl" data-count={v} data-money={money || undefined}>
                       0
                     </b>

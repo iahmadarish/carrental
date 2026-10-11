@@ -28,6 +28,7 @@ export default function Hero({ locale, dict }) {
   const router = useRouter();
   const root = useRef(null);
   const [showLoader, setShowLoader] = useState(true);
+  const [mountScene, setMountScene] = useState(false);
   const [listing, setListing] = useState("rent");
   const [form, setForm] = useState({ city: "", type: "", from: "", to: "", max: "", fuel: "" });
   const h = dict.home;
@@ -45,12 +46,14 @@ export default function Hero({ locale, dict }) {
     const seen = sessionStorage.getItem("velo-loaded");
     const ctx = gsap.context(() => {
       const reveal = () => {
+        setMountScene(true);
         fireIntro();
         gsap.fromTo(".hero-line > span", { yPercent: 110 }, { yPercent: 0, duration: 1.3, ease: "power4.out", stagger: 0.12, delay: 0.2 });
         gsap.fromTo(".hero-in", { opacity: 0, y: 30 }, { opacity: 1, y: 0, duration: 1.1, ease: "power3.out", stagger: 0.12, delay: 0.6 });
       };
       if (reduce || seen) {
         setShowLoader(false);
+        setMountScene(true);
         if (reduce) fireIntro();
         else reveal();
         return;
@@ -58,28 +61,11 @@ export default function Hero({ locale, dict }) {
       sessionStorage.setItem("velo-loaded", "1");
       gsap.set(".hero-line > span", { yPercent: 110 });
       gsap.set(".hero-in", { opacity: 0 });
-      const counter = { v: 0 };
       gsap
         .timeline()
-        .to(".loader-word", { y: 0, duration: 0.9, ease: "power4.out", stagger: 0.08 })
-        .to(
-          counter,
-          {
-            v: 100,
-            duration: 1.6,
-            ease: "power2.inOut",
-            onUpdate: () => {
-              const n = root.current?.querySelector(".loader-count");
-              const b = root.current?.querySelector(".loader-bar");
-              if (n) n.textContent = Math.round(counter.v);
-              if (b) b.style.width = `${counter.v}%`;
-            },
-          },
-          0.2,
-        )
-        .to(".loader-word", { y: "-110%", duration: 0.6, ease: "power3.in", stagger: 0.05 })
-        .to(".loader", { yPercent: -100, duration: 0.9, ease: "expo.inOut" }, "-=0.2")
-        .add(reveal, "-=0.45")
+        .fromTo(".loader-word", { y: "110%" }, { y: 0, duration: 0.55, ease: "power3.out", stagger: 0.06 })
+        .to(".loader", { opacity: 0, duration: 0.45, ease: "power2.inOut" }, "+=0.15")
+        .add(reveal, "-=0.25")
         .add(() => setShowLoader(false));
     }, root);
 
@@ -114,20 +100,17 @@ export default function Hero({ locale, dict }) {
 
   const set = (k) => (e) => setForm((f) => ({ ...f, [k]: e.target.value }));
   const field = "flex flex-col gap-0.5 rounded-2xl border border-transparent bg-white/[0.04] px-4 py-3 transition focus-within:border-ochre";
-  const label = "text-[11px] font-bold tracking-[0.12em] text-mute uppercase";
+  const label = "text-xs font-medium text-mute";
   const control = "w-full bg-transparent font-semibold outline-none [color-scheme:dark] [&>option]:bg-ink-2";
 
   return (
     <section ref={root} className="relative flex min-h-svh items-end overflow-hidden pt-36 pb-16 max-md:pt-28">
       {showLoader && (
         <div className="loader fixed inset-0 z-[90] grid place-items-center bg-ink">
-          <div className="overflow-hidden font-display text-4xl font-extrabold tracking-tight sm:text-7xl">
-            <span className="loader-word inline-block translate-y-[110%]">VELO</span>
-            <span className="loader-word inline-block translate-y-[110%] text-ochre">.</span>
-            <span className="loader-word inline-block translate-y-[110%]">DRIVE</span>
+          <div className="overflow-hidden font-display text-4xl font-semibold tracking-tight sm:text-6xl">
+            <span className="loader-word inline-block translate-y-[110%]">Velo</span>
+            <span className="loader-word inline-block translate-y-[110%] text-ochre">Drive</span>
           </div>
-          <div className="loader-count absolute right-8 bottom-6 font-display text-6xl text-ochre">0</div>
-          <div className="loader-bar absolute bottom-0 left-0 h-[3px] w-0 bg-ochre" />
         </div>
       )}
 
@@ -135,11 +118,10 @@ export default function Hero({ locale, dict }) {
         aria-hidden
         className="pointer-events-none absolute -top-[10vw] -right-[15vw] h-[60vw] w-[60vw] rounded-full bg-[radial-gradient(circle,rgba(232,100,44,.28),transparent_60%)] blur-3xl"
       />
-      <HeroScene />
+      {mountScene && <HeroScene />}
 
       <div className="hero-copy container-x pointer-events-none relative z-10">
-        <span className="eyebrow hero-in">{dict.hero.badge}</span>
-        <h1 className="h-xl mt-5 mb-6">
+        <h1 className="h-xl hero-in mb-6">
           <span className="hero-line block overflow-hidden pb-[0.06em]">
             <span className="inline-block">{dict.hero.title}</span>
           </span>
@@ -149,7 +131,7 @@ export default function Hero({ locale, dict }) {
                 const words = dict.hero.titleAccent.split(" ");
                 return (
                   <>
-                    <span className="outline-text">{words[0]}</span>{" "}
+                    <span className="text-sand">{words[0]}</span>{" "}
                     <span className="text-ochre">{words.slice(1).join(" ")}</span>
                   </>
                 );
@@ -176,7 +158,7 @@ export default function Hero({ locale, dict }) {
             ))}
           </div>
           <div className="grid grid-cols-2 gap-1.5 md:grid-cols-[repeat(4,1fr)_auto]">
-            <label className={field}>
+            <label className={`${field} order-1 col-span-2 sm:col-span-1 sm:order-none`}>
               <span className={label}>{h.city}</span>
               <select className={control} value={form.city} onChange={set("city")}>
                 <option value="">{h.allCities}</option>
@@ -185,7 +167,7 @@ export default function Hero({ locale, dict }) {
                 ))}
               </select>
             </label>
-            <label className={field}>
+            <label className={`${field} order-2 col-span-2 sm:col-span-1 sm:order-none`}>
               <span className={label}>{h.type}</span>
               <select className={control} value={form.type} onChange={set("type")}>
                 <option value="">{h.anyType}</option>
@@ -196,7 +178,7 @@ export default function Hero({ locale, dict }) {
             </label>
             {listing === "rent" ? (
               <>
-                <label className={field}>
+                <label className={`${field} order-3`}>
                   <span className={label}>{h.from}</span>
                   <input
                     type="date"
@@ -209,14 +191,14 @@ export default function Hero({ locale, dict }) {
                     }}
                   />
                 </label>
-                <label className={field}>
+                <label className={`${field} order-4`}>
                   <span className={label}>{h.to}</span>
                   <input type="date" className={control} value={to} min={from || undefined} onChange={set("to")} />
                 </label>
               </>
             ) : (
               <>
-                <label className={field}>
+                <label className={`${field} order-3 col-span-2 sm:col-span-1`}>
                   <span className={label}>{h.budget}</span>
                   <select className={control} value={form.max} onChange={set("max")}>
                     <option value="">{h.anyBudget}</option>
@@ -226,7 +208,7 @@ export default function Hero({ locale, dict }) {
                     <option value="200000">Under $200k</option>
                   </select>
                 </label>
-                <label className={field}>
+                <label className={`${field} order-4 col-span-2 sm:col-span-1`}>
                   <span className={label}>{h.fuel}</span>
                   <select className={control} value={form.fuel} onChange={set("fuel")}>
                     <option value="">{h.anyFuel}</option>
@@ -237,7 +219,7 @@ export default function Hero({ locale, dict }) {
                 </label>
               </>
             )}
-            <Magnetic strength={0.15} className="block max-md:col-span-2">
+            <Magnetic strength={0.15} className="order-5 block max-md:col-span-2 md:order-none">
               <button className="btn h-full w-full rounded-2xl px-8 max-md:py-4">
                 {h.search} <ArrowRight className="h-4 w-4" aria-hidden />
               </button>
@@ -246,7 +228,7 @@ export default function Hero({ locale, dict }) {
         </form>
       </div>
 
-      <div className="absolute bottom-5 left-1/2 z-10 hidden -translate-x-1/2 flex-col items-center gap-2.5 text-[11px] tracking-[0.3em] text-mute uppercase md:flex">
+      <div className="absolute bottom-5 left-1/2 z-10 hidden -translate-x-1/2 flex-col items-center gap-2.5 text-xs font-medium text-mute md:flex">
         {h.scroll}
         <i className="block h-11 w-px origin-top animate-[drip_2s_infinite] bg-gradient-to-b from-ochre to-transparent" />
       </div>

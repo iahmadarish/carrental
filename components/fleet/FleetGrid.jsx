@@ -5,6 +5,7 @@ import { usePathname, useRouter, useSearchParams } from "next/navigation";
 import gsap from "gsap";
 import { SlidersHorizontal, X } from "lucide-react";
 import VehicleCard, { CardSkeletons, typeLabel } from "@/components/shared/VehicleCard";
+import RetryPanel from "@/components/shared/RetryPanel";
 import { useStaggerIn } from "@/components/shared/Motion";
 import { useLenis } from "@/components/providers/AppProviders";
 import { api } from "@/lib/api";
@@ -15,7 +16,7 @@ const SEATS = ["2", "5", "7"];
 const csv = (v) => (v ? v.split(",").filter(Boolean) : []);
 
 function H({ children }) {
-  return <p className="mb-3 text-xs font-bold tracking-[0.14em] text-mute uppercase">{children}</p>;
+  return <p className="panel-title mb-3">{children}</p>;
 }
 
 function Chips({ values, selected, onToggle, label = (v) => v }) {
@@ -42,6 +43,7 @@ export default function FleetGrid({ locale, dict, lockListing }) {
   const [meta, setMeta] = useState({ makes: [], cities: [], types: [] });
   const [data, setData] = useState(null);
   const [error, setError] = useState("");
+  const [reloadKey, setReloadKey] = useState(0);
   const [q, setQ] = useState(sp.get("q") || "");
   const [drawer, setDrawer] = useState(false);
   const grid = useRef(null);
@@ -101,7 +103,7 @@ export default function FleetGrid({ locale, dict, lockListing }) {
     return () => {
       alive = false;
     };
-  }, [f, dict.common.error]);
+  }, [f, dict.common.error, reloadKey]);
 
   useStaggerIn(grid, [data]);
 
@@ -248,7 +250,7 @@ export default function FleetGrid({ locale, dict, lockListing }) {
 
           <div ref={grid} className="grid gap-6 [perspective:1200px] sm:grid-cols-2 xl:grid-cols-3">
             {error ? (
-              <p className="col-span-full rounded-3xl border border-dashed border-line-2 p-16 text-center text-mute">{error}</p>
+              <RetryPanel message={error} retryLabel={dict.common.retry} onRetry={() => setReloadKey((k) => k + 1)} />
             ) : !data ? (
               <CardSkeletons n={6} />
             ) : data.cars.length ? (

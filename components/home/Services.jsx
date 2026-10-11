@@ -13,8 +13,7 @@ export default function Services({ dict }) {
   return (
     <section className="section pt-0">
       <div className="container-x">
-        <span className="eyebrow">{dict.services.label}</span>
-        <SplitHeading text={dict.services.title} className="h-lg mt-5 mb-14" />
+        <SplitHeading text={dict.services.title} className="h-lg mb-14" />
         <Reveal className="grid gap-5 md:grid-cols-3" stagger={0.12}>
           {items.map(({ key, Icon }, i) => (
             <div
@@ -26,8 +25,7 @@ export default function Services({ dict }) {
               <span className="relative grid h-14 w-14 place-items-center rounded-2xl bg-ochre/12 text-ochre transition duration-500 group-hover:rotate-[-8deg] group-hover:bg-ochre group-hover:text-white">
                 <Icon className="h-6 w-6" aria-hidden />
               </span>
-              <p className="relative mt-10 font-display text-sm text-mute">0{i + 1}</p>
-              <h3 className="relative mt-1 text-2xl font-bold">{dict.services[key].title}</h3>
+              <h3 className="relative mt-10 text-xl font-semibold">{dict.services[key].title}</h3>
               <p className="relative mt-3 text-mute">{dict.services[key].desc}</p>
             </div>
           ))}

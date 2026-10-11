@@ -86,10 +86,10 @@ export default function VehicleDetail({ slug, locale, dict }) {
           )}
 
           <Reveal className="mt-10">
-            <span className="eyebrow">
+            <p className="text-sm text-mute">
               {car.make} · {car.year}
-            </span>
-            <h1 className="h-md mt-4">{car.title}</h1>
+            </p>
+            <h1 className="h-md mt-2">{car.title}</h1>
             <div className="mt-3 flex flex-wrap items-center gap-5 text-sm text-mute">
               <span className="flex items-center gap-1.5">
                 <MapPin className="h-4 w-4" /> {car.city}, {car.state}

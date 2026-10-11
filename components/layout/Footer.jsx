@@ -41,26 +41,27 @@ export default function Footer({ locale, dict }) {
         <div className="grid gap-12 md:grid-cols-[1.6fr_1fr_1fr_1fr]">
           <div>
             <Link href={base} className="flex items-center gap-2.5">
-              <span className="flex h-10 w-10 items-center justify-center rounded-2xl bg-ochre text-white">
+              <span className="flex h-10 w-10 items-center justify-center rounded-xl bg-ochre text-white">
                 <CarFront className="h-5 w-5" aria-hidden />
               </span>
-              <span className="font-display text-xl font-extrabold">
-                VELO<span className="text-ochre">.</span>DRIVE
+              <span className="font-display text-lg font-semibold tracking-tight">
+                Velo<span className="text-ochre">Drive</span>
               </span>
             </Link>
             <p className="mt-5 max-w-sm text-sm leading-relaxed text-mute">{dict.footer.tagline}</p>
+            {dict.footer.trust && <p className="mt-4 max-w-sm text-sm leading-relaxed text-sand/80">{dict.footer.trust}</p>}
             <p className="mt-4 max-w-sm text-xs leading-relaxed text-mute/80">
               VeloDrive acknowledges the Traditional Custodians of the lands on which we operate, and pays respect to Elders past and present.
             </p>
           </div>
           {cols.map((c) => (
             <div key={c.title}>
-              <p className="mb-5 text-xs font-bold tracking-[0.18em] text-mute uppercase">{c.title}</p>
+              <p className="mb-5 text-sm font-medium text-mute">{c.title}</p>
               <ul className="space-y-3 text-[15px]">
                 {c.links.map(([label, href]) => (
                   <li key={label}>
                     {href ? (
-                      <Link href={href} className="link-u">
+                      <Link href={href} className="link-u text-foreground/90 hover:text-foreground">
                         {label}
                       </Link>
                     ) : (
@@ -75,14 +76,14 @@ export default function Footer({ locale, dict }) {
 
         <div
           aria-hidden
-          className="mt-20 overflow-hidden font-display text-[15vw] leading-[0.85] font-extrabold tracking-[-0.05em] whitespace-nowrap text-ink-3 select-none xl:text-[13rem]"
+          className="mt-20 overflow-hidden font-display text-[15vw] leading-[0.85] font-semibold tracking-[-0.04em] whitespace-nowrap text-ink-3 select-none xl:text-[11rem]"
         >
-          VELODRIVE
+          VeloDrive
         </div>
 
         <div className="flex flex-wrap justify-between gap-4 border-t border-line pt-6 text-xs text-mute">
           <span>
-            © {year} VeloDrive Australia Pty Ltd · ABN 00 000 000 000 · Licensed Motor Dealer. {dict.footer.rights}
+            © {year} VeloDrive Australia Pty Ltd · ABN 00 000 000 000 · Licensed motor dealer · {dict.footer.rights}
           </span>
           <span>
             {dict.common.gstNote} · {dict.footer.links.privacy} · {dict.footer.links.terms} · {dict.footer.links.careers}

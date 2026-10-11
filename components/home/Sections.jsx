@@ -35,7 +35,7 @@ export function Marquee({ items }) {
         {row.map((b, i) => (
           <span key={i} className="inline-flex items-center gap-16 font-display text-3xl font-bold text-mute sm:text-4xl">
             {b}
-            <span className="text-lg text-ochre">✦</span>
+            <span className="text-base text-line-2">·</span>
           </span>
         ))}
       </div>
@@ -51,8 +51,7 @@ export function IntroStats({ dict }) {
       <div className="container-x">
         <div className="mb-16 grid items-end gap-10 lg:grid-cols-2">
           <div>
-            <span className="eyebrow">{h.intro.label}</span>
-            <SplitHeading text={h.intro.title} className="h-lg mt-5" />
+            <SplitHeading text={h.intro.title} className="h-lg" />
           </div>
           <Reveal>
             <p className="lead">{h.intro.body}</p>
@@ -87,10 +86,11 @@ export function WhyHorizontal({ dict }) {
     const mm = gsap.matchMedia();
     mm.add("(min-width: 768px)", () => {
       const dist = () => track.current.scrollWidth - window.innerWidth;
+      const scrollLen = () => Math.min(dist(), window.innerHeight * 2.2);
       const tween = gsap.to(track.current, {
         x: () => -dist(),
         ease: "none",
-        scrollTrigger: { trigger: section.current, start: "top top", end: () => `+=${dist()}`, pin: true, scrub: 1, invalidateOnRefresh: true },
+        scrollTrigger: { trigger: section.current, start: "top top", end: () => `+=${scrollLen()}`, pin: true, scrub: 1, invalidateOnRefresh: true },
       });
       track.current.querySelectorAll(".why-icon").forEach((icon) => {
         gsap.from(icon, { rotate: -90, scale: 0.4, opacity: 0, duration: 0.8, scrollTrigger: { trigger: icon, containerAnimation: tween, start: "left 85%" } });
@@ -106,7 +106,6 @@ export function WhyHorizontal({ dict }) {
         className="flex gap-7 px-5 py-20 max-md:flex-col md:py-0 md:pr-[10vw] md:pl-[max(20px,calc((100vw-80rem)/2+2rem))]"
       >
         <div className="flex shrink-0 flex-col justify-center gap-5 md:w-[460px]">
-          <span className="eyebrow">{w.label}</span>
           <h2 className="h-lg">{w.title}</h2>
           <p className="lead">{w.hint}</p>
         </div>
@@ -149,8 +148,7 @@ export function Categories({ dict, locale }) {
   return (
     <section className="section pt-0">
       <div className="container-x">
-        <span className="eyebrow">{c.label}</span>
-        <SplitHeading text={c.title} className="h-lg mt-5 mb-14" />
+        <SplitHeading text={c.title} className="h-lg mb-14" />
         <Reveal className="grid grid-cols-2 gap-3.5 sm:grid-cols-3 lg:grid-cols-6" stagger={0.06}>
           {Object.entries(CAT_ICONS).map(([type, d]) => (
             <Link
@@ -199,8 +197,7 @@ export function Steps({ dict }) {
   return (
     <section className="section pt-0">
       <div className="container-x">
-        <span className="eyebrow">{s.label}</span>
-        <SplitHeading text={s.title} className="h-lg mt-5 mb-14" />
+        <SplitHeading text={s.title} className="h-lg mb-14" />
         <div ref={ref}>
         <Reveal className="relative grid gap-10 sm:grid-cols-2 lg:grid-cols-4 lg:gap-0">
           <span className="absolute top-[34px] right-0 left-0 hidden h-px bg-line-2 lg:block" />
@@ -263,8 +260,7 @@ export function FinanceCalc({ dict, locale }) {
     <section className="section pt-0" id="finance">
       <div className="container-x grid items-center gap-14 lg:grid-cols-2 lg:gap-24">
         <div>
-          <span className="eyebrow">{f.label}</span>
-          <SplitHeading text={f.title} className="h-lg mt-5 mb-6" />
+          <SplitHeading text={f.title} className="h-lg mb-6" />
           <Reveal>
             <p className="lead">{f.body}</p>
             <div className="mt-8 flex flex-wrap gap-3">
@@ -356,8 +352,7 @@ export function Locations({ dict, locale }) {
   return (
     <section className="section pt-0">
       <div className="container-x">
-        <span className="eyebrow">{l.label}</span>
-        <SplitHeading text={l.title} className="h-lg mt-5 mb-14" />
+        <SplitHeading text={l.title} className="h-lg mb-14" />
         <div className="grid items-center gap-14 lg:grid-cols-[1.1fr_1fr]">
           <svg ref={svg} viewBox="0 0 600 520" className="w-full" role="img" aria-label="VeloDrive locations across Australia">
             <path
@@ -415,8 +410,7 @@ export function Reviews({ dict }) {
   return (
     <section className="section pt-0">
       <div className="container-x">
-        <span className="eyebrow">{r.label}</span>
-        <SplitHeading text={r.title} className="h-lg mt-5 mb-14" />
+        <SplitHeading text={r.title} className="h-lg mb-14" />
         <Reveal className="grid gap-5 lg:grid-cols-3" stagger={0.12}>
           {r.items.map((it) => (
             <figure key={it.name} data-reveal className="card flex flex-col gap-6 p-8">
@@ -426,6 +420,13 @@ export function Reviews({ dict }) {
                 ))}
               </div>
               <blockquote className="text-lg leading-relaxed">“{it.quote}”</blockquote>
+              {(it.trip || it.date) && (
+                <p className="text-sm text-mute">
+                  {it.trip}
+                  {it.trip && it.date ? " · " : ""}
+                  {it.date}
+                </p>
+              )}
               <figcaption className="mt-auto flex items-center gap-3">
                 <span className="grid h-11 w-11 place-items-center rounded-full bg-ink-3 font-extrabold text-ochre">
                   {it.name.replace(/[^A-Za-z ]/g, "").split(" ").filter(Boolean).map((x) => x[0]).slice(0, 2).join("")}
@@ -460,8 +461,7 @@ export function Faq({ dict }) {
     <section className="section pt-0" id="faq">
       <div className="container-x max-w-4xl">
         <div className="mb-12 text-center">
-          <span className="eyebrow">{f.label}</span>
-          <SplitHeading text={f.title} className="h-lg mt-5" />
+          <SplitHeading text={f.title} className="h-lg" />
         </div>
         <Reveal stagger={0.05}>
           {f.items.map((it, i) => (

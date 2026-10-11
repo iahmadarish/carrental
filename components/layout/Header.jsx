@@ -22,8 +22,8 @@ export function Logo({ base }) {
       <span className="flex h-10 w-10 items-center justify-center rounded-2xl bg-ochre text-white transition duration-500 group-hover:rotate-[-8deg] group-hover:scale-105">
         <CarFront className="h-5 w-5" aria-hidden />
       </span>
-      <span className="font-display text-xl font-extrabold tracking-tight">
-        VELO<span className="text-ochre">.</span>DRIVE
+      <span className="font-display text-lg font-semibold tracking-tight">
+        Velo<span className="text-ochre">Drive</span>
       </span>
     </Link>
   );

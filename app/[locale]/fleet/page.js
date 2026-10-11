@@ -18,7 +18,7 @@ export default async function FleetPage({ params }) {
 
   return (
     <>
-      <PageHero eyebrow={dict.nav.fleet} lines={[words[0], words.slice(1).join(" ") || "fleet."]} subtitle={dict.fleetPage.subtitle} />
+      <PageHero lines={[words[0], words.slice(1).join(" ") || "fleet."]} subtitle={dict.fleetPage.subtitle} />
       <section className="container-x pb-20">
         {/* filters read the URL (useSearchParams), so they stream in behind a fallback */}
         <Suspense fallback={<div className="grid gap-6 sm:grid-cols-2 xl:grid-cols-3"><CardSkeletons n={6} /></div>}>

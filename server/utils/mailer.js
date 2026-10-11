@@ -25,14 +25,14 @@ const brand = {
 };
 
 function layout(title, bodyHtml) {
-  return `<!doctype html><html><body style="margin:0;background:#f4efe8;font-family:Helvetica,Arial,sans-serif;color:#1a1a1a">
+  return `<!doctype html><html><body style="margin:0;background:#f4efe8;font-family:'Segoe UI',system-ui,-apple-system,sans-serif;color:#1a1a1a;line-height:1.55">
   <table width="100%" cellpadding="0" cellspacing="0" style="padding:32px 12px"><tr><td align="center">
     <table width="560" cellpadding="0" cellspacing="0" style="max-width:560px;background:#fff;border-radius:16px;overflow:hidden">
       <tr><td style="background:${brand.dark};padding:28px 32px">
-        <span style="color:#fff;font-size:20px;font-weight:800;letter-spacing:.5px">VELO<span style="color:${brand.accent}">●</span>DRIVE</span>
+        <span style="color:#fff;font-size:20px;font-weight:600;letter-spacing:-.02em">Velo<span style="color:${brand.accent}">Drive</span></span>
       </td></tr>
       <tr><td style="padding:32px">
-        <h1 style="margin:0 0 16px;font-size:22px">${title}</h1>
+        <h1 style="margin:0 0 16px;font-size:22px;font-weight:600;letter-spacing:-.02em">${title}</h1>
         ${bodyHtml}
       </td></tr>
       <tr><td style="padding:20px 32px;background:#faf7f2;font-size:12px;color:#777">
@@ -68,7 +68,7 @@ const templates = {
     text: `Hi ${name}, reset your password here (valid 30 minutes): ${link}`,
     html: layout('Reset your password', `
       <p>Hi ${name}, we received a request to reset your password. This link is valid for <b>30 minutes</b>.</p>
-      <p style="margin:28px 0"><a href="${link}" style="background:${brand.accent};color:#fff;padding:14px 26px;border-radius:999px;text-decoration:none;font-weight:700">Reset password</a></p>
+      <p style="margin:28px 0"><a href="${link}" style="background:${brand.accent};color:#fff;padding:14px 26px;border-radius:12px;text-decoration:none;font-weight:600">Reset password</a></p>
       <p style="color:#777;font-size:13px">If you didn’t ask for this, no action is needed.</p>`),
   }),
 
@@ -77,7 +77,7 @@ const templates = {
     text: `Welcome aboard, ${name}! Your account is verified.`,
     html: layout(`Welcome aboard, ${name}!`, `
       <p>Your email is verified. You can now book rentals, save favourites and request test drives across Sydney, Melbourne, Brisbane, Perth, Adelaide and more.</p>
-      <p style="margin:28px 0"><a href="${process.env.CLIENT_URL}/au/fleet" style="background:${brand.accent};color:#fff;padding:14px 26px;border-radius:999px;text-decoration:none;font-weight:700">Explore the fleet</a></p>`),
+      <p style="margin:28px 0"><a href="${process.env.CLIENT_URL}/au/fleet" style="background:${brand.accent};color:#fff;padding:14px 26px;border-radius:12px;text-decoration:none;font-weight:600">Explore the fleet</a></p>`),
   }),
 
   booking: (name, b, car) => ({

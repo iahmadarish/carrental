@@ -55,8 +55,7 @@ export default function AccountDashboard({ locale, dict }) {
     <div className="container-x pt-36 pb-16">
       <div className="mb-10 flex flex-wrap items-end justify-between gap-5">
         <div>
-          <span className="eyebrow">{a.label}</span>
-          <h1 className="h-lg mt-4">
+          <h1 className="h-lg">
             {a.hello}, {user.name.split(" ")[0]}.
           </h1>
         </div>
@@ -94,7 +93,7 @@ export default function AccountDashboard({ locale, dict }) {
                   [a.spend, bookings ? aud(spend) : "—"],
                 ].map(([k, v]) => (
                   <div key={k} className="rounded-2xl border border-line bg-ink-2 p-5">
-                    <span className="text-xs tracking-[0.1em] text-mute uppercase">{k}</span>
+                    <span className="text-xs font-medium text-mute">{k}</span>
                     <b className="mt-1.5 block font-display text-3xl">{v}</b>
                   </div>
                 ))}
